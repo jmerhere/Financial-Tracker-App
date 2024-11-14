@@ -1,3 +1,51 @@
+<script>
+export default {
+  data() {
+    return {
+      amount: "",
+      category: "0", // Default to "no selection"
+      type: "0", // Default to "no selection"
+    };
+  },
+  methods: {
+    submitForm() {
+      if (this.amount && this.category !== "0" && this.type !== "0") {
+        // Emit the transaction data
+        this.$emit("add-transaction", {
+          amount: this.amount,
+          category: this.getCategoryName(this.category),
+          type: this.type === "1" ? "Income" : "Expense",
+        });
+
+        // Reset form fields
+        this.amount = "";
+        this.category = "0"; // Reset to "no selection"
+        this.type = "0"; // Reset to "no selection"
+
+        // Force Vue to update the dropdown display
+        this.$nextTick(() => {
+          this.$refs.categoryDropdown.value = "0";
+          this.$refs.typeDropdown.value = "0";
+        });
+      } else {
+        alert("Please fill out all fields before submitting.");
+      }
+    },
+    getCategoryName(value) {
+      const categories = {
+        "1": "Home",
+        "2": "Vehicle",
+        "3": "Business",
+        "4": "Bills & Payments",
+        "5": "Grocery/Food",
+        "6": "Activities",
+      };
+      return categories[value];
+    },
+  },
+};
+</script>
+
 <template>
   <form @submit.prevent="submitForm" class="transaction-form">
     <input
@@ -7,55 +55,25 @@
       required
       class="input-field"
     />
-    <select v-model="category" required class="input-field">
-      <option value="" disabled>Select category</option>
-      <option value="Home">Home</option>
-      <option value="Vehicle">Vehicle</option>
-      <option value="Business">Business</option>
-      <option value="Bills & Payments">Bills & Payments</option>
-      <option value="Grocery/Food">Grocery/Food</option>
-      <option value="Activities">Activities</option>
+    <select v-model="category" ref="categoryDropdown" required class="input-field">
+      <option value="0" disabled>Select category</option>
+      <option value="1">Home</option>
+      <option value="2">Vehicle</option>
+      <option value="3">Business</option>
+      <option value="4">Bills & Payments</option>
+      <option value="5">Grocery/Food</option>
+      <option value="6">Activities</option>
     </select>
-    <select v-model="type" required class="input-field">
-      <option value="" disabled>Select type</option>
-      <option value="Income">Income</option>
-      <option value="Expense">Expense</option>
+    <select v-model="type" ref="typeDropdown" required class="input-field">
+      <option value="0" disabled>Select type</option>
+      <option value="1">Income</option>
+      <option value="2">Expense</option>
     </select>
     <button type="submit">Add Transaction</button>
   </form>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      amount: "",
-      category: "",
-      type: "",
-    };
-  },
-  methods: {
-    submitForm() {
-      // Only submit if all fields have values
-      if (this.amount && this.category && this.type) {
-        // Emit the new transaction object
-        this.$emit("add-transaction", {
-          amount: this.amount,
-          category: this.category,
-          type: this.type,
-        });
 
-        // Reset all fields after submission
-        this.amount = "";
-        this.category = ""; // Reset category dropdown
-        this.type = ""; // Reset type dropdown
-      } else {
-        alert("Please fill out all fields before submitting.");
-      }
-    },
-  },
-};
-</script>
 
 <style scoped>
 .transaction-form {
@@ -96,6 +114,6 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #b300b3;
 }
 </style>
